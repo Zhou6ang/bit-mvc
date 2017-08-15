@@ -35,6 +35,11 @@
       <artifactId>guava</artifactId>
       <version>22.0</version>
     </dependency>
+	<dependency>
+		<groupId>org.apache.bcel</groupId>
+		<artifactId>bcel</artifactId>
+		<version>6.0</version>
+	</dependency>
   </dependencies>
   <build>
 	<plugins>
