@@ -1,14 +1,11 @@
 package com.github.zhou6ang.mvc.view;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,13 +14,16 @@ import javax.servlet.ServletContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.zhou6ang.mvc.parsing.BeanEngine;
+
 public enum BitViews {
 	instance;
 	
-	private static Map<String,String> beans = new ConcurrentHashMap<>();
 	private static final Logger logger = LogManager.getLogger(BitViews.class);
-	
 	private ServletContext servletContext;
+	private BitViews() {
+		
+	}
 	public Object forward(String path) throws Exception{
 		if(servletContext == null){
 			throw new Exception("servlet context is null.");
@@ -34,15 +34,15 @@ public enum BitViews {
 		return parseContent(p);
 	}
 
-	private String parseContent(Path p) throws IOException {
+	private String parseContent(Path p) throws Exception {
 		logger.debug("Starting to process static html template ...");
 		byte[] content = Files.readAllBytes(p);
 		Matcher matcher = Pattern.compile("\\#\\{.*\\}").matcher(new String(content,StandardCharsets.UTF_8));
 		StringBuffer sb = new StringBuffer();
 		while(matcher.find()){
-			String s = matcher.group();
-			s = s.substring(2, s.length()-1);
-			matcher.appendReplacement(sb, beans.get(s));
+			String clazzMethod = matcher.group();
+			clazzMethod = clazzMethod.substring(2, clazzMethod.length()-1);
+			matcher.appendReplacement(sb, String.valueOf(BeanEngine.instance.getValue(clazzMethod)));
 		}
 		matcher.appendTail(sb);
 		logger.debug("The content parsing done.");
@@ -56,8 +56,8 @@ public enum BitViews {
 		}
 		this.servletContext = context;
 		
-		beans.put("bean.title", "This is testing title");
-		beans.put("bean.content", "This is testing content.");
+//		beans.put("bean.title", "This is testing title");
+//		beans.put("bean.content", "This is testing content.");
 		//@TODO collect all Bean which has annotation as @BitBean
 		//then invoke corresponding method as bean.title.
 		
@@ -66,7 +66,6 @@ public enum BitViews {
 	
 	public void destroy(){
 		this.servletContext = null;
-		beans.clear();
 		logger.debug("Destroy BitViews ...");
 	}
 	

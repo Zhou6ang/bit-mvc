@@ -19,9 +19,9 @@ import com.github.zhou6ang.mvc.view.BitViews;
 @WebServlet(name = "BitMVC", urlPatterns = { "*.xhtml","*.html"}, loadOnStartup = 1, initParams = {
 		@WebInitParam(name = "user", value = "tom") }, displayName = "bit-mvc engine", description = "This is bit-mvc engine.", largeIcon = "")
 @MultipartConfig(maxFileSize = 10000, maxRequestSize = 1000, fileSizeThreshold = 8888)
-public class BitEngine extends HttpServlet {
+public class BitEngineServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LogManager.getLogger(BitEngine.class);
+	private static final Logger logger = LogManager.getLogger(BitEngineServlet.class);
 	
 	@Override
 	public void destroy() {
