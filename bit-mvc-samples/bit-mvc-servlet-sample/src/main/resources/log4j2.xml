@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+  <Properties>
+    <Property name="filename">/var/log/app/test.log</Property>
+    <Property name="logfolder">D:/target/logs</Property>
+  </Properties>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] |%-5level| %logger{36} - %msg%n"/>
+    </Console>
+    <!--<File name="File" fileName="${filename}">
+      <PatternLayout>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] |%-5level| %logger{36} - %msg%n</pattern>
+      </PatternLayout>
+    </File>-->
+    <!-- filePattern supported with ".gz", ".zip", ".bz2", ".deflate", ".pack200", or ".xz"  -->
+    <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${logfolder}/bit-mvc-testing.log"
+                 filePattern="${logfolder}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
+       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] |%-5level| %logger{36} - %msg%n"/>
+       <Policies>
+       <!-- <TimeBasedTriggeringPolicy interval="8"  modulate="true"/> make shard file each 8-hours,e.g. "7","15","23" o'clock-->
+        <TimeBasedTriggeringPolicy/>
+        <!-- size support KB,MB,GB -->
+        <SizeBasedTriggeringPolicy size="5MB"/>
+      </Policies>
+      <!-- <DefaultRolloverStrategy max="xx" min="1" fileIndex="min" compressionLevel="0-9"/> -->
+      <DefaultRolloverStrategy max="5" fileIndex="min"/>
+    </RollingRandomAccessFile>
+  </Appenders>
+  <Loggers>
+    <Logger name="com.github.zhou6ang" level="trace" additivity="false">
+     <AppenderRef ref="RollingRandomAccessFile"/>
+     <AppenderRef ref="Console"/>
+    </Logger>
+    <!-- set additivity="true" and it will be recorded by Root even Logger "com.zz" already recorded. if set "false", the content that Logger "com.zz" already record will not be recorded by Root.
+    <Logger name="com.zz" level="trace" additivity="false">
+        <AppenderRef ref="RollingRandomAccessFile"/>
+    </Logger>-->
+    <Root level="trace">
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
+</Configuration>

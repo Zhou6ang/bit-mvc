@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.zg.testing</groupId>
+  <artifactId>bit-mvc-spring-boot-sample</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>bit-mvc-spring-boot-sample Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.6.RELEASE</version>
+  </parent>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+	<dependency>
+      <groupId>com.github.zhou6ang.mvc</groupId>
+      <artifactId>bit-mvc</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>4.0.0-b01</version>        
+        <scope>provided</scope>
+    </dependency>
+    <!-- Spring Boot -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!--Note: 1. comment it, if only need to produce executable jar.-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-tomcat</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <!--Note: 2. if using log4j2, should exclude Logback(spring-boot-starter-logging)-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+        <exclusions>                
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <!--Note: 3. if need to use log4j2,add dependency-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>       
+  </dependencies>
+  
+  <build>
+        <plugins>
+            
+            <!-- build a tomcat web service via spring boot -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!--Note: 4. uncomment, if want to produce both executable war and container(tomcat,jetty,etc.) war.-->
+                <configuration>
+                    <finalName>bit-mvc-testing-final-name</finalName>
+                    <classifier>classifier-name</classifier>
+                </configuration>
+            </plugin>
+<!--Note:5. uncomment, if want to produce both executable war and container(tomcat,jetty,etc.) war but except embedded container configuration file: application.properties-->
+			<!--<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>exec</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>classifier-name</classifier>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<forceCreation>true</forceCreation>
+							Need this to ensure application.yml is excluded
+							<excludes>
+								<exclude>application.properties</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>-->
+        </plugins>        
+    </build>
+ 
+
+</project>
