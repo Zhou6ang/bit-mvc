@@ -68,11 +68,11 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <!--Note: 4. uncomment, if want to produce both executable war and container(tomcat,jetty,etc.) war.-->
                 <configuration>
-                    <finalName>bit-mvc-testing-final-name</finalName>
-                    <classifier>classifier-name</classifier>
+                    <!--classifier>classifier-name</classifier-->
+                    <finalName>bit-mvc-spring-boot-sample-final-name</finalName>
                 </configuration>
             </plugin>
-<!--Note:5. uncomment, if want to produce both executable war and container(tomcat,jetty,etc.) war but except embedded container configuration file: application.properties-->
+			<!--Note:5. uncomment, if want to produce both executable war and container(tomcat,jetty,etc.) war but except embedded container configuration file: application.properties-->
 			<!--<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
