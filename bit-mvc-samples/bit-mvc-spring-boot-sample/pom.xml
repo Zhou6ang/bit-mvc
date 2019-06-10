@@ -20,9 +20,9 @@
       <scope>test</scope>
     </dependency>
 	<dependency>
-      <groupId>com.github.zhou6ang.mvc</groupId>
-      <artifactId>bit-mvc</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <groupId>com.github.zhou6ang.framework</groupId>
+      <artifactId>bit-mvc-spring-boot-autoconfigure</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
         <groupId>javax.servlet</groupId>
@@ -72,6 +72,16 @@
                     <finalName>bit-mvc-spring-boot-sample-final-name</finalName>
                 </configuration>
             </plugin>
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<compilerVersion>1.8</compilerVersion>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 			<!--Note:5. uncomment, if want to produce both executable war and container(tomcat,jetty,etc.) war but except embedded container configuration file: application.properties-->
 			<!--<plugin>
 				<artifactId>maven-jar-plugin</artifactId>

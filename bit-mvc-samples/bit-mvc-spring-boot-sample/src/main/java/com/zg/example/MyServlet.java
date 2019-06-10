@@ -1,4 +1,4 @@
-package com.zg.testing;
+package com.zg.example;
 
 import java.io.IOException;
 
@@ -29,7 +29,4 @@ public class MyServlet extends HttpServlet{
 		resp.getWriter().println("This shows my servlet response.");
 	}
 	
-	public static void main(String[] args) throws Exception {
-//		System.out.println(BeanEngine.instance.getValue("bitbean_0.title"));
-	}
 }

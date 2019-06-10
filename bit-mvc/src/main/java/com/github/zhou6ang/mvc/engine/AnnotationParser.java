@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +39,6 @@ public class AnnotationParser {
 	/**
 	 * Parsing all clazz for current ClassLoader.
 	 * @param bytecodeAnalasis indicates that whether analyze clazz via byte code or not.
-	 * @return Map, key is value of annotation if present, value is clazz object.
 	 */
 	public AnnotationParser(boolean bytecodeAnalasis) {
 		
@@ -86,7 +86,11 @@ public class AnnotationParser {
 								BitRequestPath requestPath = anns[0];
 								if(!requestPath.value().isEmpty()) {
 									logger.debug("Found @BitRequestPath annotation for Clazz: " + p.getName());
-									handler.put(getHandlerKey(requestPath,controllerPath), new DefaultHandler(method,controllerInstance));
+									DefaultHandler defhandler = new DefaultHandler(method,controllerInstance);
+									defhandler.setHttpReqMethod(requestPath.method());
+									defhandler.getReqHeaders().putAll(parseHeader(requestPath.reqHeader()));
+									defhandler.getResHeaders().putAll(parseHeader(requestPath.resHeader()));
+									handler.put(getHandlerKey(requestPath,controllerPath), defhandler);
 								}else {
 									throw new BitMvcException("Error definition for "+requestPath.value()+" in @Controller class "+p.getName());
 								}
@@ -104,6 +108,24 @@ public class AnnotationParser {
 		
 	}
 
+	/**
+	 * format headers if it has.
+	 * @param reqHeader declare headers.
+	 * @return header map.
+	 */
+	private Map<String,String> parseHeader(String[] reqHeader) {
+		Map<String, String> map = new HashMap<>();
+		if (reqHeader == null || reqHeader.length == 0)
+			return map;
+		for (String header : reqHeader) {
+			String[] str = header.split("=");
+			if(str != null && str.length == 2) {
+				map.put(str[0], str[1].trim());
+			}
+		}
+		return map;
+	}
+
 	private void resolveAllBeanDependencies() throws Exception {
 
 		//process all dependencies for BitBean.
@@ -117,6 +139,11 @@ public class AnnotationParser {
 
 	}
 
+	/**
+	 * resolve dependencies between beans.
+	 * @param instance instance of bean.
+	 * @throws Exception if some error happen.
+	 */
 	private void resolveBeanDependencies(Object instance) throws Exception {
 		for (Field field : instance.getClass().getDeclaredFields()) {
 			BitAutowired[] anns = field.getDeclaredAnnotationsByType(BitAutowired.class);
@@ -180,7 +207,7 @@ public class AnnotationParser {
 	/**
 	 * Get all clazz from ClassLoader and filtered by gave annotation type.
 	 * 
-	 * @param annotationClass
+	 * @param annotationClass annotation class name.
 	 * @return List which contains all Clazz of annotation.
 	 * @throws IOException throw exception if loading clazz from classloader.
 	 */
@@ -192,8 +219,8 @@ public class AnnotationParser {
 	 * Get all clazz(include sub-package clazz) and filtered by gave annotation
 	 * type.
 	 * 
-	 * @param packageName
-	 * @param annotationClass
+	 * @param packageName package name.
+	 * @param annotationClass annotation class.
 	 * @return List which contains all Clazz of annotation.
 	 * @throws IOException throw exception if loading clazz from classloader.
 	 */

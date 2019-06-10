@@ -1,4 +1,4 @@
-package com.zg.testing.bean;
+package com.zg.example.bitmvc;
 
 import com.github.zhou6ang.mvc.annotation.BitBean;
 

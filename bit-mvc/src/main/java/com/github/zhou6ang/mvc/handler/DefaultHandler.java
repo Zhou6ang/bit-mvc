@@ -3,7 +3,9 @@ package com.github.zhou6ang.mvc.handler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +16,9 @@ public class DefaultHandler implements IHandler{
 	private Object[] parameters;
 	private Object returnValue;
 	private Object controller;
+	private Map<String,String> reqHeaders = new HashMap<>();
+	private Map<String,String> resHeaders = new HashMap<>();
+	private String httpReqMethod;
 	
 	public DefaultHandler(Method method,Object controller) {
 		this.method = method;
@@ -39,6 +44,10 @@ public class DefaultHandler implements IHandler{
 		this.returnValue = returnValue;
 	}
 	
+	public void setHttpReqMethod(String httpReqMethod) {
+		this.httpReqMethod = httpReqMethod;
+	}
+
 	@Override
 	public Object process(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<Object> list = new ArrayList<>();
@@ -56,5 +65,19 @@ public class DefaultHandler implements IHandler{
 		
 		return method.invoke(controller, list.toArray());
 	}
-	
+
+	@Override
+	public Map<String, String> getReqHeaders() {
+		return reqHeaders;
+	}
+
+	@Override
+	public Map<String, String> getResHeaders() {
+		return resHeaders;
+	}
+
+	@Override
+	public String getHttpRequestMethod() {
+		return httpReqMethod;
+	}
 }

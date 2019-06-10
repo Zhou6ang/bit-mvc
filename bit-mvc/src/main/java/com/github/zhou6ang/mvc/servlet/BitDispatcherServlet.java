@@ -1,6 +1,7 @@
 package com.github.zhou6ang.mvc.servlet;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,19 +14,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zhou6ang.mvc.engine.BitContextEngine;
 import com.github.zhou6ang.mvc.handler.IHandler;
 import com.github.zhou6ang.mvc.util.Constants;
 import com.github.zhou6ang.mvc.view.BitModelViewer;
 import com.github.zhou6ang.mvc.view.BitViewEngine;
-import com.github.zhou6ang.mvc.view.BitViewer;
 
 @WebServlet(name = "BitMVC", urlPatterns = { "/","*.xhtml"}, loadOnStartup = 1, initParams = {
-		@WebInitParam(name = "user", value = "tom") }, displayName = "bit-mvc engine", description = "This is bit-mvc engine.", largeIcon = "")
+		@WebInitParam(name = "user", value = "Jaye") }, displayName = "BitDispatcherServlet of Bit-MVC", description = "This is dispatcher servlet of bit-mvc.", largeIcon = "")
 @MultipartConfig(maxFileSize = 10000, maxRequestSize = 1000, fileSizeThreshold = 8888)
 public class BitDispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(BitDispatcherServlet.class);
+	private ObjectMapper jsonMapper = new ObjectMapper();
 	
 	public BitDispatcherServlet() {
 		BitContextEngine.instance.init();
@@ -62,16 +65,11 @@ public class BitDispatcherServlet extends HttpServlet {
 
 	protected void process(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		logger.info("The BitEngine has recieved request message.");
-		// response.setHeader("Connection", "Keep-Alive");
 		response.setContentType("text/html;charset=utf-8");
-		// request.
-		// String path = request.getRequestURI().replaceFirst(request.getContextPath(),
-		// "");
 		// logger.info("RequestURI:"+request.getRequestURI());
 		// logger.info("ServletPath:"+request.getServletPath());
 		// logger.info("PathTranslated:"+request.getPathTranslated());
 		// logger.info("ContextPath:"+request.getContextPath());
-//		logger.info("request path:" + path);
 
 		IHandler mappedHandler = getHandler(request);
 		if (mappedHandler == null) {
@@ -80,29 +78,36 @@ public class BitDispatcherServlet extends HttpServlet {
 			mv.getViewer().setViewPath(request.getServletPath());
 			BitViewEngine view = new BitViewEngine(mv,getServletContext());
 			if (view.isValidResourcePath()) {
-				response.getWriter().println(view.moveOn());
-				response.getWriter().flush();
+				flyOut(response, view.moveOn());
 			}else {
 				noHandlerFound(request, response);
 			}
 		}else {
 			Object result = mappedHandler.process(request,response);
+			mappedHandler.getResHeaders().forEach((k,v)->{
+				response.addHeader(k, v);
+			});
 			if(result instanceof BitModelViewer) {
 				BitViewEngine view = new BitViewEngine((BitModelViewer)result,getServletContext());
 				if (view.isValidResourcePath()) {
 					if(((BitModelViewer) result).getStatusCode() != 0) {
 						response.setStatus(((BitModelViewer) result).getStatusCode());
 					}
-					response.getWriter().println(view.moveOn());
-					response.getWriter().flush();
+					flyOut(response, view.moveOn());
 				} else {
 					noHandlerFound(request, response);
 				}
+			}else if(result instanceof JsonNode || result instanceof Map) {
+				flyOut(response, jsonMapper.writeValueAsString(result));
 			}else {
-				response.getWriter().println(result);
-				response.getWriter().flush();
+				flyOut(response, result);
 			}
 		}
+	}
+	
+	private void flyOut(HttpServletResponse response,Object result) throws Exception {
+		response.getWriter().println(result);
+		response.getWriter().flush();
 	}
 
 	private void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -82,7 +82,7 @@ public class BitViewEngine {
 	}
 
 	private void findAndCallBitBeanMethod(StringBuffer content) {
-		logger.debug("The CallBitBeanMethod start.");
+		logger.debug("The callBitBeanMethod start.");
 		Matcher matcher = GrammarUtils.getMethodParsePattern().matcher(content);
 		StringBuffer sb = new StringBuffer();
 		while(matcher.find()){
@@ -91,7 +91,7 @@ public class BitViewEngine {
 		}
 		matcher.appendTail(sb);
 		clearAndSetValue(content,sb.toString());
-		logger.debug("The CallBitBeanMethod done.");
+		logger.debug("The callBitBeanMethod done.");
 	}
 	
 	private void findAndExecuteELexpression(StringBuffer content) {

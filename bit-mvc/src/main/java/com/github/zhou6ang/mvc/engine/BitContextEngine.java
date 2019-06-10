@@ -39,8 +39,8 @@ public enum BitContextEngine {
 		try {
 			obj = execute(bitbeanName,method);
 		} catch (Exception e) {
-			logger.error("exception happened:",e);
-			throw new BitMvcException("exception happened: ",e);
+			logger.error("BitMvc Exception happened:",e);
+			throw new BitMvcException("BitMvc Exception happened: ",e);
 		}
 		return obj;
 	}
@@ -71,7 +71,9 @@ public enum BitContextEngine {
 	}
 	
 	public void destroy() {
-		
+		beans.clear();
+		contollers.clear();
+		handlers.clear();
 	}
 	
 }

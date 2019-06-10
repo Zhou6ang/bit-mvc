@@ -1,30 +1,29 @@
-package com.zg.testing.bean;
+package com.zg.example.bitmvc;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import com.github.zhou6ang.mvc.annotation.BitAutowired;
 import com.github.zhou6ang.mvc.annotation.BitBean;
 
-@BitBean("bitbean_0")
-public class MyBean_0 {
+@BitBean("userBean")
+public class MyUserBean {
 	
 	@BitAutowired
-	private MyBean_1 myBean_1;
+	private MyBusinessBean logicBean;
 
-	public int getAllUser(){
-		return 100;
+	public int getUserCount(){
+		return logicBean.getAllUsers().size();
 	}
 	
 	public List<User> getList(){
-		
-		return Arrays.asList(new User(1, "a", 10),new User(2, "b", 20),new User(3, "c", 30));
+		List<User> list = logicBean.getAllUsers();
+		return list;
 	}
 	
 	public List<Data> getRank() {
 
-		List<Data> list = Arrays.asList(new Data(1, 96, 3), new Data(2, 99, 2), new Data(3, 100, 1));
+		List<Data> list = logicBean.getAllData();
 		list.sort(new Comparator<Data>() {
 			@Override
 			public int compare(Data o1, Data o2) {
@@ -36,10 +35,10 @@ public class MyBean_0 {
 	}
 	
 	public String title(){
-		return "this is testing title from bitbean_0";
+		return "Example title from bitbean";
 	}
 	
 	public String content(){
-		return "The text "+ myBean_1.getCount() +" from dependency bitbean_1";
+		return "<br/>Note: This text "+ logicBean.getCount() +" was from MyBusinessBean.";
 	}
 }

@@ -1,14 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:view="https://github.com/Zhou6ang/bit-mvc">
 <head>
-	<title>#{bitbean_0.title}</title>
+	<title>#{userBean.title}</title>
 </head>
 <body>
-<h2>Hello World! bitbean_0: #{bitbean_0.getAllUser}</h2>
-<h2>MyBean_1: #{com.zg.testing.bean.MyBean_1.getCount}</h2>
-text: ${text}
-<br>
-sum: ${sum}
-<a href="myapp/users/other.html">link</a>
+<p></>Total Users: <font color="green">#{userBean.getUserCount}</font></p>
+<p>The count from MyBusinessBean: <font color="green">#{com.zg.example.bitmvc.MyBusinessBean.getCount}</font></p>
+text: <font color="green">${text}</font>
+<br/>
+sum: <font color="green">${sum}</font>
+<br/>
+<ul>
+  <li><a href="/myapp/users/other.html">other link</a></li>
+</ul>
+
 </body>
 </html>

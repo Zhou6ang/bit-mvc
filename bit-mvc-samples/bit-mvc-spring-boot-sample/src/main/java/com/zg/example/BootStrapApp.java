@@ -1,15 +1,9 @@
-package com.zg.testing;
+package com.zg.example;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-
-import com.github.zhou6ang.mvc.servlet.BitDispatcherServlet;
 
 /**
  * Hello world!
@@ -17,7 +11,7 @@ import com.github.zhou6ang.mvc.servlet.BitDispatcherServlet;
  */
 //@ServletComponentScan({"com.github.zhou6ang.mvc.servlet","com.zg.testing"})
 @SpringBootApplication
-public class BootStrapApp extends SpringBootServletInitializer {
+public class BootStrapApp {
 	private static final Logger log = LogManager.getLogger(BootStrapApp.class);
 
 	public static void main(String[] args) {
@@ -26,11 +20,5 @@ public class BootStrapApp extends SpringBootServletInitializer {
 		log.info("Starting BootStrapApp Done.");
 	}
 
-	
-	@Bean
-	public ServletRegistrationBean registerBitEngineServlet(){
-		ServletRegistrationBean srb = new ServletRegistrationBean(new BitDispatcherServlet(),"/");
-		return srb;
-	}
 	
 }
