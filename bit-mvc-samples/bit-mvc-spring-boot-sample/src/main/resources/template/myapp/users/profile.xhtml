@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:view="https://github.com/Zhou6ang/bit-mvc">
+<head>
+	<title>#{userBean.title}</title>
+</head>
+<body>
+	<div>Method of call BitBean immediately: <font color="green">#{userBean.content}</font></div>
+	<div>Constants from ModelViewer: <font color="green">${a}</font>,<font color="green">${b}</font></div>
+	<table>
+	    <tr>
+	        <th>Id</th>
+	        <th>Name</th>
+	        <th>Age</th>
+	    </tr>
+	    <tr view:each="emp : #{userBean.getList}">
+	        <td view:text="${emp.id}">1</td>
+	        <td view:text="${emp.name}">abc</td>
+	        <td view:text="${emp.age}">18</td>
+	    </tr>
+	</table>
+	<table>
+	    <tr>
+	    	<th>Score</th>
+	    	<th>Rank</th>
+	        <th>Id</th>
+	    </tr>
+	    <tr view:each="var : ${list}">
+	        <td view:text="${var.score}">abc</td>
+	        <td view:text="${var.rank}">18</td>
+	        <td view:text="${var.id}">1</td>
+	    </tr>
+	</table>
+</body>
+</html>

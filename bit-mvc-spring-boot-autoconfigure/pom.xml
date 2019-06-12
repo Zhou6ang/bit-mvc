@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
   <dependencies>
 	<dependency>
-      <groupId>com.github.zhou6ang.mvc</groupId>
+      <groupId>com.github.zhou6ang.framework</groupId>
       <artifactId>bit-mvc</artifactId>
       <version>1.0.0</version>
     </dependency>

@@ -62,8 +62,9 @@ public class AnnotationParser {
 	 */
 	private void parsingWithBytecode() throws IOException {
 
-		logger.debug("Parsing all Clazz with bytecode analysis which have @BitBean annotation.");
-		ClassPath cp = ClassPath.from(getClass().getClassLoader());
+		logger.debug("Parsing all Clazz with bytecode analysis which using @BitXXX annotation.");
+		ClassLoader classLoader =  getClass().getClassLoader();
+		ClassPath cp = ClassPath.from(classLoader);
 		cp.getTopLevelClasses().forEach(p -> {
 			try {
 				ClassParser cpa = new ClassParser(p.asByteSource().openStream(), null);
@@ -71,13 +72,17 @@ public class AnnotationParser {
 				AnnotationEntry[] ae = jc.getAnnotationEntries();
 				for (AnnotationEntry annotationEntry : ae) {
 					if (BITBEAN_ANNOTATION_TYPE.equals(annotationEntry.getAnnotationType())) {
-						logger.debug("Found @BitBean annotation for Clazz: " + p.getName());
-						String beanName = processAnnotationBitBean(annotationEntry, p.getName());
-						bitBean.put(beanName, p.load().newInstance());
+						
+						String fullClassPath = normalizedClassName(p.getName());
+						logger.debug("Found @BitBean annotation for Clazz: " + p.getName() + " after normalized: "+fullClassPath);
+						String beanName = processAnnotationBitBean(annotationEntry, fullClassPath);
+						bitBean.put(beanName, classLoader.loadClass(fullClassPath).newInstance());
 					}else if (BITCONTROLLER_ANNOTATION_TYPE.equals(annotationEntry.getAnnotationType())) {
-						logger.debug("Found @BitController annotation for Clazz: " + p.getName());
-						String controllerPath = processAnnotationBitBean(annotationEntry, p.getName());
-						Object controllerInstance = p.load().newInstance();
+						
+						String fullClassPath = normalizedClassName(p.getName());
+						logger.debug("Found @BitController annotation for Clazz: " + p.getName() + " after normalized: "+fullClassPath);
+						String controllerPath = processAnnotationBitBean(annotationEntry, fullClassPath);
+						Object controllerInstance = classLoader.loadClass(fullClassPath).newInstance();
 						bitController.put(controllerPath, controllerInstance);
 						
 						for(Method method : controllerInstance.getClass().getDeclaredMethods()) {
@@ -85,14 +90,14 @@ public class AnnotationParser {
 							if(anns != null && anns.length > 0) {
 								BitRequestPath requestPath = anns[0];
 								if(!requestPath.value().isEmpty()) {
-									logger.debug("Found @BitRequestPath annotation for Clazz: " + p.getName());
+									logger.debug("Found @BitRequestPath annotation in Clazz: " + fullClassPath);
 									DefaultHandler defhandler = new DefaultHandler(method,controllerInstance);
 									defhandler.setHttpReqMethod(requestPath.method());
 									defhandler.getReqHeaders().putAll(parseHeader(requestPath.reqHeader()));
 									defhandler.getResHeaders().putAll(parseHeader(requestPath.resHeader()));
 									handler.put(getHandlerKey(requestPath,controllerPath), defhandler);
 								}else {
-									throw new BitMvcException("Error definition for "+requestPath.value()+" in @Controller class "+p.getName());
+									throw new BitMvcException("Error definition for "+requestPath.value()+" in @Controller class "+ fullClassPath);
 								}
 							}
 						}
@@ -106,6 +111,10 @@ public class AnnotationParser {
 			}
 		});
 		
+	}
+	
+	private String normalizedClassName(String className) {
+		return className.replaceAll("BOOT-INF\\.classes\\.", "").replaceAll("WEB-INF\\.classes\\.", ""); //compatibility spring-boot-maven-plugin
 	}
 
 	/**

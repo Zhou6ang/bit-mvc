@@ -28,8 +28,8 @@ performance and flexible framework and it's also a lightweigt
 framwork than others(e.g. Spring-MVC). The bit-mvc provides a good 
 and easy way for developer/user to implement Model-View-Controller 
 mode in modern web project. All the things in bit-mvc are through
-declar annotation, so our mission is that make everything easy 
-to use in programming world.
+declare annotation to implement, so our mission is that make everything 
+easy to use in programming world.
 
 Installation
 ============
@@ -59,12 +59,15 @@ Tutorial
 =========
 ### I. the sample of spring-boot project which integrate bit-mvc as below.
 
-more detail please go through https://github.com/Zhou6ang/bit-mvc/tree/master/bit-mvc-samples/bit-mvc-spring-boot-sample
+For springboot project that using bit-mvc framework, please go through https://github.com/Zhou6ang/bit-mvc/tree/master/bit-mvc-samples/bit-mvc-spring-boot-sample
+
+For non-springboot project that using bit-mvc framework, please go through https://github.com/Zhou6ang/bit-mvc/tree/master/bit-mvc-samples/bit-mvc-servlet-sample
 
 ### II. usage of annotation as below.
 
 Program entry:
 ```java
+@SpringBootApplication
 public class App{
 	private static final Logger log = LogManager.getLogger(App.class);
 
@@ -158,4 +161,32 @@ public class MyController {
 		return mv;
 	}
 }
+```
+
+template foler: normally, the template folder stored xhtml/html template and also some static resources, it's under the resources folder of project as below. We can also redefine it via environment variable `bit.mvc.view-prefix`, e.g. `-Dbit.mvc.view-prefix=custom-folder`
+```java
+example
+    |-pom.xml
+    |-src
+        |-main
+            |-java
+                |-example.sample.demo
+                    |-App.java
+                    |-...
+            |-resources
+                |-logback-spring.xml
+                |-template
+                    |-index.html
+                    |-myapp
+                        |-demo.xhtml
+                        |-users
+                            |-profile.xhtml
+                            |-other.html
+                            |-...
+                        |-jscript
+                            |-demo.js
+                        |-css
+                            |-demo.css
+                        |-pic
+                            |-example.jpeg
 ```

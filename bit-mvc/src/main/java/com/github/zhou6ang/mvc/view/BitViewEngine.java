@@ -1,14 +1,12 @@
 package com.github.zhou6ang.mvc.view;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.regex.Matcher;
 
 import javax.servlet.ServletContext;
@@ -25,12 +23,17 @@ import com.github.zhou6ang.mvc.engine.BitContextEngine;
 import com.github.zhou6ang.mvc.exception.BitMvcException;
 import com.github.zhou6ang.mvc.util.Constants;
 import com.github.zhou6ang.mvc.util.GrammarUtils;
+import com.google.common.io.CharStreams;
 
 public class BitViewEngine {
 	
 	private static final Logger logger = LogManager.getLogger(BitViewEngine.class);
 	private ServletContext servletContext;
 	private BitModelViewer bitModelViewer;
+	private InputStream inputstream = null;
+	private String validPath = "";
+	private String[] configuredPrefixs = { "", System.getProperty(Constants.VIEW_PREFIX, "/template") };
+
 	public BitViewEngine(BitModelViewer bitModelViewer,ServletContext servletContext) {
 		this.bitModelViewer = bitModelViewer;
 		this.servletContext = servletContext;
@@ -42,30 +45,32 @@ public class BitViewEngine {
 			throw new BitMvcException("servletContext context is not set.");
 		}
 	}
-	public Object moveOn() throws Exception{
+
+	public Object moveOn() throws Exception {
 		
-		URL url = servletContext.getResource(bitModelViewer.getViewer().getViewPath());
-		Path p = Paths.get(url.toURI());
-		logger.debug("Will forward to path:["+p+"]");
-		return parseContent(p);
+		if (inputstream == null) {
+			throw new BitMvcException("Could not found view path: " + validPath);
+		}
+		logger.debug("Will forward to path:[" + validPath + "]");
+		return parseContent(inputstream);
 	}
 
-	private String parseContent(Path p) throws Exception {
+	private String parseContent(InputStream inputStream) throws Exception {
 		logger.debug("Starting to process static html template ...");
-		String output = new String(Files.readAllBytes(p),StandardCharsets.UTF_8);
-		if(checkBitMvcSchema(output)) {
-			StringBuffer content = new StringBuffer(output);
+		String metaData = CharStreams.toString(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+		if (checkBitMvcSchema(metaData)) {
+			StringBuffer content = new StringBuffer(metaData);
 			findAndExecuteELexpression(content);
 			findAndCallBitBeanMethod(content);
 			findAndFillWithModel(content);
-			output = content.toString();
+			metaData = content.toString();
 		}
 		logger.debug("Ending to process static html template ...");
-		return output;
+		return metaData;
 	}
 	
 	private boolean checkBitMvcSchema(String content) {
-		return content.matches(Constants.BITMVC_SCHEMA);
+		return content.matches(Constants.BIT_MVC_SCHEMA);
 	}
 	private void findAndFillWithModel(StringBuffer content) {
 		logger.debug("The findAndFillWithModel start.");
@@ -219,16 +224,39 @@ public class BitViewEngine {
 	}
 	
 	public boolean isValidResourcePath() throws Exception{
-		String path = bitModelViewer.getViewer().getViewPath();
-		URL url = servletContext.getResource(path);
-		boolean result = Optional.ofNullable(url).isPresent();
-		if(result){
-			logger.debug("Found the resouces: "+path);
-		}else{
-			logger.debug("Not found the resouces: "+path);
-		}
 		
-		return result;
+		
+		for (String prefix : configuredPrefixs) {
+			String path = prefix + bitModelViewer.getViewer().getViewPath();
+			
+			if(checkPathFromJarPackage(path) || checkPathFromServletContext(path)) {
+				validPath = path;
+				logger.debug("Found the resouces: "+validPath);
+				return true;
+			}
+		}
+		logger.debug("Not found the resouces: "+bitModelViewer.getViewer().getViewPath());
+		return false;
+	}
+	
+	private boolean checkPathFromServletContext(String path) throws Exception {
+		URL url = servletContext.getResource(path);
+		if(url != null) {
+			inputstream = servletContext.getResourceAsStream(path);
+			logger.debug("Full url: "+ url);
+			return inputstream != null;
+		}
+		return false;
+	}
+	
+	private boolean checkPathFromJarPackage(String path) {
+		URL url = getClass().getClassLoader().getResource(path);
+		if(url != null) {
+			inputstream = getClass().getClassLoader().getResourceAsStream(path);
+			logger.debug("Full url: "+ url);
+			return inputstream != null;
+		}
+		return false;
 	}
 	
 }

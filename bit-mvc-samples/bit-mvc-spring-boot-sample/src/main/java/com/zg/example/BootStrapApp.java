@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Hello world!
  *
  */
-//@ServletComponentScan({"com.github.zhou6ang.mvc.servlet","com.zg.testing"})
 @SpringBootApplication
 public class BootStrapApp {
 	private static final Logger log = LogManager.getLogger(BootStrapApp.class);
