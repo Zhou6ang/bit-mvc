@@ -33,6 +33,8 @@ easy to use in programming world.
 
 Installation
 ============
+
+For Non-SpringBoot user, please use below dependency:
 ### maven dependency
 ```xml
 <dependency>
@@ -42,9 +44,7 @@ Installation
 </dependency>
 ```
 
-Note
-=========
-For Spring-Boot user, please use below:
+For SpringBoot user, please use below autoconfigure dependency:
 ### maven dependency
 ```xml
 <dependency>
