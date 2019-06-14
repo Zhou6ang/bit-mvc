@@ -33,24 +33,24 @@ easy to use in programming world.
 
 Installation
 ============
+
+For Non-SpringBoot user, please use below dependency:
 ### maven dependency
 ```xml
 <dependency>
     <groupId>com.github.zhou6ang.framework</groupId>
     <artifactId>bit-mvc</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
-Note
-=========
-For Spring-Boot user, please use below:
+For SpringBoot user, please use below autoconfigure dependency:
 ### maven dependency
 ```xml
 <dependency>
     <groupId>com.github.zhou6ang.framework</groupId>
     <artifactId>bit-mvc-spring-boot-autoconfigure</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 

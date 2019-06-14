@@ -75,16 +75,15 @@ public class AnnotationParser {
 						
 						String fullClassPath = normalizedClassName(p.getName());
 						logger.debug("Found @BitBean annotation for Clazz: " + p.getName() + " after normalized: "+fullClassPath);
-						String beanName = processAnnotationBitBean(annotationEntry, fullClassPath);
-						bitBean.put(beanName, classLoader.loadClass(fullClassPath).newInstance());
+						String beanAnnoValue = processAnnotationBitBean(annotationEntry);
+						bitBean.put(beanAnnoValue.isEmpty() ? fullClassPath : beanAnnoValue, classLoader.loadClass(fullClassPath).newInstance());
 					}else if (BITCONTROLLER_ANNOTATION_TYPE.equals(annotationEntry.getAnnotationType())) {
 						
 						String fullClassPath = normalizedClassName(p.getName());
 						logger.debug("Found @BitController annotation for Clazz: " + p.getName() + " after normalized: "+fullClassPath);
-						String controllerPath = processAnnotationBitBean(annotationEntry, fullClassPath);
+						String controllerAnnoValue = processAnnotationBitBean(annotationEntry);
 						Object controllerInstance = classLoader.loadClass(fullClassPath).newInstance();
-						bitController.put(controllerPath, controllerInstance);
-						
+						bitController.put(controllerAnnoValue.isEmpty() ? fullClassPath : controllerAnnoValue, controllerInstance);
 						for(Method method : controllerInstance.getClass().getDeclaredMethods()) {
 							BitRequestPath[] anns = method.getDeclaredAnnotationsByType(BitRequestPath.class);
 							if(anns != null && anns.length > 0) {
@@ -95,7 +94,7 @@ public class AnnotationParser {
 									defhandler.setHttpReqMethod(requestPath.method());
 									defhandler.getReqHeaders().putAll(parseHeader(requestPath.reqHeader()));
 									defhandler.getResHeaders().putAll(parseHeader(requestPath.resHeader()));
-									handler.put(getHandlerKey(requestPath,controllerPath), defhandler);
+									handler.put(getHandlerKey(requestPath,controllerAnnoValue), defhandler);
 								}else {
 									throw new BitMvcException("Error definition for "+requestPath.value()+" in @Controller class "+ fullClassPath);
 								}
@@ -257,13 +256,13 @@ public class AnnotationParser {
 		return list;
 	}
 
-	private String processAnnotationBitBean(AnnotationEntry annotationEntry, String simpleName) {
+	private String processAnnotationBitBean(AnnotationEntry annotationEntry) {
 		for (ElementValuePair evp : annotationEntry.getElementValuePairs()) {
 			if ("value".equals(evp.getNameString())) {
 				return evp.getValue().stringifyValue();
 			}
 		}
-		return simpleName;
+		return "";
 	}
 	
 	public Map<String, Object> getBitBeans() {
